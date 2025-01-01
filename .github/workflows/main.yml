@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Run Test Suite
 
 on:
   push:
@@ -48,7 +48,14 @@ jobs:
           name: coverage-report
           path: coverage/
 
-      # Step 7: Publish Coverage to Codecov
+      # Step 7: Publish Coverage to Codecov (Optional)
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: true
 
       # Step 8: Generate Coverage Badge
       - name: Generate Coverage Badge
@@ -75,3 +82,5 @@ jobs:
         with:
           name: cypress-artifacts
           path: cypress/results/
+
+    
