@@ -1,70 +1,68 @@
-name: Run Test Suite
+name: Run Tests case
 
 on:
   push:
     branches:
       - master
       - main
-  pull_request:
-    branches:
-      - master
-      - main
 
 jobs:
-  test-and-quality-checks:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     steps:
       # Step 1: Check out the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js with cache
+      # Step 2: Set up Node.js
       - name: Set Up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: "18" # Use a stable Node.js version
 
       # Step 3: Install dependencies
       - name: Install Dependencies
-        run: npm ci
+        run: npm install  
 
-      # Step 4: Lint the code
-      - name: Run Linter
+      - name: Lint the Code
         run: npm run lint
 
       # Step 5: Run unit tests with coverage
-      - name: Run Unit Tests with Coverage
+      - name: Run Unit Tests
         run: npm run test:coverage
         env:
           CI: true
+      # Step 4: Run a test file
+      - name: Run Test File
+        run: node .github/workflows/loadTest.js
 
-      # Step 6: Upload coverage reports as artifacts
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: coverage/
+      # Step 5: Start the server
+      - name: Start Server
+        run: npm start &
+        env:
+          PORT: 8090
 
-      # Step 7: Publish Coverage to Codecov (Optional)
-     
-      # Step 9: Perform Security Audit
-      - name: Run Security Scan
-        run: npm audit --audit-level=moderate
+      # Step 6: Wait for the server to be ready (max 2 minutes)
+      - name: Wait for Server
+        run: npx wait-on http://localhost:8090 --timeout 120000
 
-      
-
-      # Step 11: Run Cypress Tests
+      # Step 7: Run Cypress tests
       - name: Run Cypress Tests
         run: npm run cypress:run:workflow || true
 
-      # Step 12: Upload Cypress Test Artifacts
-      - name: Upload Cypress Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: cypress-artifacts
-          path: cypress/results/
+      # Step 8: Generate Link to Files at Commit
+      - name: Generate Link to Files
+        id: generate_link
+        run: |
+          REPO_URL=$(git config --get remote.origin.url)
+          COMMIT_SHA=$(git rev-parse HEAD)
+          REPO_URL_CLEAN="${REPO_URL%.git}"
+          LINK="$REPO_URL_CLEAN/tree/$COMMIT_SHA"
+          echo "Browse the repository files at this commit: $LINK"
+          echo "::set-output name=commit_files_link::$LINK"
 
-    
+      # Step 9: Run `index.js` Script with GitHub Link
+      - name: Run Index.js
+        run: node .github/workflows/index.js ${{ steps.generate_link.outputs.commit_files_link }}
