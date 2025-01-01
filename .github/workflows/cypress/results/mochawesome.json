@@ -1,0 +1,186 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 5,
+    "passes": 4,
+    "pending": 0,
+    "failures": 1,
+    "start": "2025-01-01T16:57:43.438Z",
+    "end": "2025-01-01T16:58:04.827Z",
+    "duration": 21389,
+    "testsRegistered": 5,
+    "passPercent": 80,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "c9490fdf-f312-4133-899d-793766db544a",
+      "title": "",
+      "fullFile": ".github/workflows/cypress/e2e/test.cy.js",
+      "file": ".github/workflows/cypress/e2e/test.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "6aaa25cd-75c4-4785-afdd-871c5229cefd",
+          "title": "Custom Server Tests",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Should load login page correctly - marks 2",
+              "fullTitle": "Custom Server Tests Should load login page correctly - marks 2",
+              "timedOut": null,
+              "duration": 37,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"http://localhost:8091/login\");\n// Add assertions specific to login page",
+              "err": {},
+              "uuid": "dea38b0c-8af6-4058-bc5f-3c8f6751a985",
+              "parentUUID": "6aaa25cd-75c4-4785-afdd-871c5229cefd",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Should load homepage correctly - marks 2",
+              "fullTitle": "Custom Server Tests Should load homepage correctly - marks 2",
+              "timedOut": null,
+              "duration": 10218,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"http://localhost:8091\");\n// Assert title\ncy.get(\"#title\").should(\"contain\", \"Your Website Name\");\n// Assert image\ncy.get(\"#img\").should(\"be.visible\");\n// Assert grid\ncy.get(\"#grid\").should(\"exist\");\n// Assert course\ncy.get(\"#course\").should(\"exist\");",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 10000ms: Expected to find element: `#title`, but never found it.",
+                "estack": "AssertionError: Timed out retrying after 10000ms: Expected to find element: `#title`, but never found it.\n    at Context.eval (webpack:///./cypress/e2e/test.cy.js:16:21)",
+                "diff": null
+              },
+              "uuid": "521fb5de-5722-4fd3-abf6-6b15412dae3f",
+              "parentUUID": "6aaa25cd-75c4-4785-afdd-871c5229cefd",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Should load signup page correctly - marks 2",
+              "fullTitle": "Custom Server Tests Should load signup page correctly - marks 2",
+              "timedOut": null,
+              "duration": 23,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"http://localhost:8091/signup\");\n// Add assertions specific to signup page",
+              "err": {},
+              "uuid": "e0e8b900-63f3-49d6-bd12-08ccd661510f",
+              "parentUUID": "6aaa25cd-75c4-4785-afdd-871c5229cefd",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Should load contact page correctly - marks 2",
+              "fullTitle": "Custom Server Tests Should load contact page correctly - marks 2",
+              "timedOut": null,
+              "duration": 19,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"http://localhost:8091/contact\");\n// Add assertions specific to contact page",
+              "err": {},
+              "uuid": "f8888020-59a2-41d9-a790-a57631690278",
+              "parentUUID": "6aaa25cd-75c4-4785-afdd-871c5229cefd",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Should load service page correctly - marks 2",
+              "fullTitle": "Custom Server Tests Should load service page correctly - marks 2",
+              "timedOut": null,
+              "duration": 24,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"http://localhost:8091/service\");\n// Add assertions specific to service page",
+              "err": {},
+              "uuid": "963611ad-f82c-402f-a5e8-7b61851cbe06",
+              "parentUUID": "6aaa25cd-75c4-4785-afdd-871c5229cefd",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "dea38b0c-8af6-4058-bc5f-3c8f6751a985",
+            "e0e8b900-63f3-49d6-bd12-08ccd661510f",
+            "f8888020-59a2-41d9-a790-a57631690278",
+            "963611ad-f82c-402f-a5e8-7b61851cbe06"
+          ],
+          "failures": [
+            "521fb5de-5722-4fd3-abf6-6b15412dae3f"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 10321,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": ".github/workflows/cypress/results",
+        "overwrite": true,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
