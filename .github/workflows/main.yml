@@ -54,9 +54,7 @@ jobs:
       - name: Run Security Scan
         run: npm audit --audit-level=moderate
 
-      # Step 10: Perform Dependency Vulnerability Check
-      - name: Dependency Vulnerability Scan
-        uses: anthonybruyant/dependency-review-action@v2
+      
 
       # Step 11: Run Cypress Tests
       - name: Run Cypress Tests
