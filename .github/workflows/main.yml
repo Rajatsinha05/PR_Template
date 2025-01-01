@@ -1,60 +1,121 @@
-name: Run Tests
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - master
       - main
+  pull_request:
+    branches:
+      - master
+      - main
 
 jobs:
-  test:
+  test-and-quality-checks:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       # Step 1: Check out the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js
+      # Step 2: Set up Node.js with cache
       - name: Set Up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18" # Use a stable Node.js version
+          node-version: "18"
+          cache: "npm"
 
       # Step 3: Install dependencies
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
-      # Step 4: Run a test file
-      - name: Run Test File
-        run: node .github/workflows/loadTest.js
+      # Step 4: Lint the code
+      - name: Run Linter
+        run: npm run lint
 
-      # Step 5: Start the server
-      - name: Start Server
-        run: npm start &
+      # Step 5: Run unit tests with coverage
+      - name: Run Unit Tests with Coverage
+        run: npm run test:coverage
         env:
-          PORT: 8090
+          CI: true
 
-      # Step 6: Wait for the server to be ready (max 2 minutes)
-      - name: Wait for Server
-        run: npx wait-on http://localhost:8090 --timeout 120000
+      # Step 6: Upload coverage reports as artifacts
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
 
-      # Step 7: Run Cypress tests
+      # Step 7: Publish Coverage to Codecov
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: true
+
+      # Step 8: Generate Coverage Badge
+      - name: Generate Coverage Badge
+        uses: cicirello/jacoco-badge-generator@v3
+        with:
+          jacoco-coverage-json: ./coverage/lcov-report/index.html
+          badge-path: ./coverage/badge.svg
+
+      # Step 9: Perform Security Audit
+      - name: Run Security Scan
+        run: npm audit --audit-level=moderate
+
+      # Step 10: Perform Dependency Vulnerability Check
+      - name: Dependency Vulnerability Scan
+        uses: anthonybruyant/dependency-review-action@v2
+
+      # Step 11: Run Cypress Tests
       - name: Run Cypress Tests
         run: npm run cypress:run:workflow || true
 
-      # Step 8: Generate Link to Files at Commit
-      - name: Generate Link to Files
-        id: generate_link
-        run: |
-          REPO_URL=$(git config --get remote.origin.url)
-          COMMIT_SHA=$(git rev-parse HEAD)
-          REPO_URL_CLEAN="${REPO_URL%.git}"
-          LINK="$REPO_URL_CLEAN/tree/$COMMIT_SHA"
-          echo "Browse the repository files at this commit: $LINK"
-          echo "::set-output name=commit_files_link::$LINK"
+      # Step 12: Upload Cypress Test Artifacts
+      - name: Upload Cypress Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-artifacts
+          path: cypress/results/
 
-      # Step 9: Run `index.js` Script with GitHub Link
-      - name: Run Index.js
-        run: node .github/workflows/index.js ${{ steps.generate_link.outputs.commit_files_link }}
+      # Step 13: Code Quality Checks with SonarCloud
+      - name: Analyze Code with SonarCloud
+        uses: sonarsource/sonarcloud-github-action@v1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=my_project
+            -Dsonar.organization=my_organization
+            -Dsonar.host.url=https://sonarcloud.io
+
+      # Step 14: Notify Current User via Email
+      - name: Send Email Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "CI/CD Pipeline Result for ${{ github.repository }}"
+          body: |
+            The CI/CD pipeline has completed for the repository: ${{ github.repository }}.
+            Check the logs for details:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ github.actor }}@example.com # Replace with dynamic user email
+
+      # Step 15: Post Result to Slack (Optional)
+      - name: Notify Slack
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_COLOR: danger
+          SLACK_MESSAGE: |
+            Tests failed on branch ${{ github.ref_name }} for commit ${{ github.sha }}. 
+            Check logs at ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
