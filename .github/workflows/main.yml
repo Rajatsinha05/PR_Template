@@ -49,13 +49,6 @@ jobs:
           path: coverage/
 
       # Step 7: Publish Coverage to Codecov
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          flags: unittests
-          fail_ci_if_error: true
 
       # Step 8: Generate Coverage Badge
       - name: Generate Coverage Badge
@@ -82,40 +75,3 @@ jobs:
         with:
           name: cypress-artifacts
           path: cypress/results/
-
-      # Step 13: Code Quality Checks with SonarCloud
-      - name: Analyze Code with SonarCloud
-        uses: sonarsource/sonarcloud-github-action@v1
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=my_project
-            -Dsonar.organization=my_organization
-            -Dsonar.host.url=https://sonarcloud.io
-
-      # Step 14: Notify Current User via Email
-      - name: Send Email Notification
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "CI/CD Pipeline Result for ${{ github.repository }}"
-          body: |
-            The CI/CD pipeline has completed for the repository: ${{ github.repository }}.
-            Check the logs for details:
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          to: ${{ github.actor }}@example.com # Replace with dynamic user email
-
-      # Step 15: Post Result to Slack (Optional)
-      - name: Notify Slack
-        if: failure()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_COLOR: danger
-          SLACK_MESSAGE: |
-            Tests failed on branch ${{ github.ref_name }} for commit ${{ github.sha }}. 
-            Check logs at ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
