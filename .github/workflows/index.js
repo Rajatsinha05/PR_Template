@@ -3,7 +3,9 @@ const path = require("path");
 
 // Resolve paths
 const metadataPath = path.resolve(__dirname, "metadata.json");
-const resultPath = path.resolve("./cypress/results/mochawesome.json"
+const resultPath = path.resolve(
+  __dirname,
+  "./cypress/results/mochawesome.json"
 );
 const gitHubLink = process.argv[2];
 
@@ -54,7 +56,7 @@ function processTestResult(filePath, token, uniqueCode, pId) {
       // Add student_id, GitHub link, and project ID
       nodeTestResult.student = { id: uniqueCode };
       nodeTestResult.githubLink = gitHubLink;
-      nodeTestResult.cyProject = {id:pId};
+      nodeTestResult.cyProject = { id: pId };
 
       // Post the result to the backend
       postResult(nodeTestResult, token);
@@ -120,7 +122,7 @@ function extractMarksFromTitle(title) {
  */
 
 async function postResult(data, token) {
-  console.log('data: ', data);
+  console.log("data: ", data);
   try {
     const response = await fetch(
       "https://practiceapi.rnwmultimedia.com/api/sandbox/result",
