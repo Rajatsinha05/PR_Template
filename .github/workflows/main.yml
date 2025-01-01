@@ -49,21 +49,7 @@ jobs:
           path: coverage/
 
       # Step 7: Publish Coverage to Codecov (Optional)
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          flags: unittests
-          fail_ci_if_error: true
-
-      # Step 8: Generate Coverage Badge
-      - name: Generate Coverage Badge
-        uses: cicirello/jacoco-badge-generator@v3
-        with:
-          jacoco-coverage-json: ./coverage/lcov-report/index.html
-          badge-path: ./coverage/badge.svg
-
+     
       # Step 9: Perform Security Audit
       - name: Run Security Scan
         run: npm audit --audit-level=moderate
